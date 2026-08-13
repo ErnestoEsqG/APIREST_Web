@@ -1,23 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const professorsController = require('../controllers/professorsController.js');
 
-router.get('/', (req, res) => {
-    res.json({msg: 'Consulting professors'});
-})
+router.get('/', professorsController.consult);
 
-router.post('/', (req, res) => {
-    res.json({msg: 'Adding professors'});
-})
+router.post('/', professorsController.input);
 
-router.route("/:id")
-    .get((req, res) => {
-        res.json({msg: 'Consulting one professor'});
-    })
-    .put((req, res) => {
-        res.json({msg: 'Update professor'});
-    })
-    .delete((req, res) => {
-        res.json({msg: 'Delete professor'});
-    });
+router.route("/id")
+    .get(professorsController.consultDetail)
+    .put(professorsController.update)
+    .delete(professorsController.delete);
 
 module.exports = router;
