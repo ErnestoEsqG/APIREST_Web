@@ -1,29 +1,88 @@
 const db = require('../database/connection.js');
 
 class CoursesController {
-    constructor(){
 
-    }
     consult(req, res){
-        res.json({msg: 'Consulting courses from class'});
+        try{
+            db.query("SELECT * FROM courses",
+                (err, rows) => {
+                    if(err) {
+                        res.status(400).send(err);
+                    }
+                    res.status(200).json(rows);
+                });
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+
     }
 
     consultDetail(req, res){
         const { id } = req.params;
-        res.json({msg: `Consulting one course from class with id ${id}`});
+        try{
+            db.query("SELECT * FROM courses WHERE id = ?", [id],
+                (err, rows) => {
+                    if(err) {
+                        res.status(400).send(err);
+                    }
+                    res.status(200).json(rows[0]);
+                });
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
     }
 
     input(req, res){
-        res.json({msg: 'Adding course from class'});
+        try{
+            const {name, description, professor_id } = req.body;
+            db.query(`INSERT INTO courses (id, name, description, professor_id)
+            VALUES (NULL, ?, ?, ?)`,
+                [name, description, professor_id],(err, rows) => {
+                    if(err){
+                        res.status(400).send(err);
+                    }
+                    res.status(201).json({ id: rows.insertId });
+                });
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
     }
 
     update(req, res){
-        res.json({msg: 'Update course from class'});
+        const { id } = req.params;
+        try{
+            const { name, description, professor_id } = req.body;
+            db.query(`UPDATE courses 
+             SET name = ?, description = ?, professor_id = ?
+             WHERE id = ?`,
+                [name, description, professor_id],(err, rows) => {
+                    if(err){
+                        res.status(400).send(err);
+                    }
+                    if(rows.affectedRows == 1)
+                        res.status(200).json({  respuesta: 'Registro actualizado exitosamente'});
+                });
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+
     }
 
     delete(req, res){
-        res.json({msg: 'Delete course from class'});
+        const { id } = req.params;
+        try{
+            db.query(`DELETE FROM courses WHERE id = ?`,
+                [id],(err, rows) => {
+                    if(err){
+                        res.status(400).send(err);
+                    }
+                    if(rows.affectedRows == 1)
+                        res.status(200).json({  respuesta: 'Registro Eliminado exitosamente'});
+                });
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
     }
 }
 
-module.exports = new CoursesController();
+module.exports = new CoursesController;
