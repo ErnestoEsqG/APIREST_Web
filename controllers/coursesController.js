@@ -55,7 +55,7 @@ class CoursesController {
             db.query(`UPDATE courses 
              SET name = ?, description = ?, professor_id = ?
              WHERE id = ?`,
-                [name, description, professor_id],(err, rows) => {
+                [name, description, professor_id, id],(err, rows) => {
                     if(err){
                         res.status(400).send(err);
                     }
