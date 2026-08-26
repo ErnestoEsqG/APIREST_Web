@@ -9,7 +9,7 @@ class StudentsController {
             db.query("SELECT * FROM students",
                 (err, rows) => {
                     if(err) {
-                        res.status(400).send(err);
+                        return res.status(400).send(err);
                     }
                     res.status(200).json(rows);
                 });
@@ -25,7 +25,7 @@ class StudentsController {
             db.query("SELECT * FROM students WHERE id = ?", [id],
                 (err, rows) => {
                     if(err) {
-                        res.status(400).send(err);
+                        return res.status(400).send(err);
                     }
                     res.status(200).json(rows[0]);
                 });
@@ -42,7 +42,7 @@ class StudentsController {
                 "VALUES(NULL, ?, ?, ?, ?);",
                 [dni, name, lastname, email],(err, rows) => {
                 if(err){
-                    res.status(400).send(err);
+                    return res.status(400).send(err);
                 }
                 res.status(201).json({ id: rows.insertId });
                 });
@@ -60,10 +60,12 @@ class StudentsController {
              WHERE id = ?`,
                 [dni, name, lastname, email, id],(err, rows) => {
                     if(err){
-                        res.status(400).send(err);
+                        return res.status(400).send(err);
                     }
-                    if(rows.affectedRows == 1)
-                    res.status(200).json({  respuesta: 'Registro actualizado exitosamente'});
+                    if(rows.affectedRows === 1) {
+                        return res.status(200).json({ respuesta: 'Registro actualizado exitosamente' });
+                    }
+                    return res.status(404).json({ error: 'Estudiante no encontrado' });
                 });
         } catch (err) {
             res.status(500).send(err.message);
@@ -77,10 +79,12 @@ class StudentsController {
             db.query(`DELETE FROM students WHERE id = ?`,
                 [id],(err, rows) => {
                     if(err){
-                        res.status(400).send(err);
+                        return res.status(400).send(err);
                     }
-                    if(rows.affectedRows == 1)
-                        res.status(200).json({  respuesta: 'Registro Eliminado exitosamente'});
+                    if(rows.affectedRows === 1) {
+                        return res.status(200).json({ respuesta: 'Registro Eliminado exitosamente' });
+                    }
+                    return res.status(404).json({ error: 'Estudiante no encontrado' });
                 });
         } catch (err) {
             res.status(500).send(err.message);
